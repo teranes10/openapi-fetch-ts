@@ -1,14 +1,33 @@
 {
-  "name": "openapi-fetch-ts",
+  "name": "@teranes/openapi-fetch",
   "version": "1.0.0",
   "description": "TypeScript library that extends the Fetch API to provide type-safe support for OpenAPI endpoints.",
-  "main": "index.js",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
+    },
+    "./vite": {
+      "import": {
+        "types": "./dist/vite.d.ts",
+        "default": "./dist/vite.js"
+      }
+    }
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "*.d.ts",
+    "dist"
+  ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsup src/*.ts --format cjs,esm --dts --splitting --clean"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/teranes10/openapi-fetch-ts"
+    "url": "git+https://github.com/teranes10/openapi-fetch-ts.git"
   },
   "keywords": [
     "openapi",
@@ -18,6 +37,13 @@
   "author": "Teranes",
   "license": "MIT",
   "devDependencies": {
-    "@types/node": "^20.11.24"
-  }
+    "@types/node": "^20.11.24",
+    "tsup": "^8.0.2",
+    "typescript": "^5.3.3"
+  },
+  "bugs": {
+    "url": "https://github.com/teranes10/openapi-fetch-ts/issues"
+  },
+  "homepage": "https://github.com/teranes10/openapi-fetch-ts#readme",
+  "dependencies": {}
 }

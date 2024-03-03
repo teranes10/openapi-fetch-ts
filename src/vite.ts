@@ -3,7 +3,10 @@ import path from "path";
 
 type Options = { src: string; outputDir?: string };
 
-export default ({ src, outputDir = "./.generated" }: Options) => {
+export default function OpenApiFetch({
+  src,
+  outputDir = "./.generated",
+}: Options) {
   return () => ({
     name: "openapi-fetch-ts",
     async buildStart() {
@@ -15,7 +18,7 @@ export default ({ src, outputDir = "./.generated" }: Options) => {
       loadSwagger(swaggerJson, path.join(outputDir, "types.ts"));
     },
   });
-};
+}
 
 async function getSwaggerJson(src: string) {
   if (src.includes("http")) {

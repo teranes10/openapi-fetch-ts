@@ -1,4 +1,4 @@
-import type { Endpoints } from "./.generated/types.ts";
+import type { Endpoints } from "./.generated/types.js";
 
 export function create(baseConfigs?: {
   baseUrl?: string;
@@ -126,7 +126,7 @@ type Interceptor = (
   next: () => Promise<any>
 ) => Promise<Result>;
 
-export function useStringTemplateWithReplacements(
+function useStringTemplateWithReplacements(
   template: string,
   replacements: Record<string, string>
 ) {
