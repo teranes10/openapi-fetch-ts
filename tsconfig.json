@@ -3,13 +3,12 @@
     "target": "ESNext",
     "module": "ESNext",
     "moduleResolution": "node",
-    "declaration": true,
-    "rootDir": "src",
-    "outDir": "./dist",
     "strict": true,
-    "allowSyntheticDefaultImports": true,
-    "typeRoots": ["./src/types", "node_modules/@types"]
+    "declaration": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "rootDir": "src",
+    "outDir": "./dist"
   },
-  "include": ["src/**/*.ts"],
-  "exclude": ["node_modules"]
+  "exclude": ["dist", "node_modules"]
 }

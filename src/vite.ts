@@ -1,23 +1,25 @@
 import fs from "fs";
 import path from "path";
+import { fileURLToPath } from "url";
 
-type Options = { src: string; outputDir?: string };
+type Options = { src: string; outputDir?: string; fileName?: string };
 
 export default function OpenApiFetch({
   src,
-  outputDir = "./.generated",
+  outputDir = path.join(fileURLToPath(import.meta.url), "../.generated"),
+  fileName = "openapi-types.ts",
 }: Options) {
-  return () => ({
+  return {
     name: "openapi-fetch-ts",
     async buildStart() {
       if (!fs.existsSync(outputDir)) {
         fs.mkdirSync(outputDir, { recursive: true });
       }
 
-      const swaggerJson = getSwaggerJson(src);
-      loadSwagger(swaggerJson, path.join(outputDir, "types.ts"));
+      const swaggerJson = await getSwaggerJson(src);
+      loadSwagger(swaggerJson, path.join(outputDir, fileName));
     },
-  });
+  };
 }
 
 async function getSwaggerJson(src: string) {
@@ -25,7 +27,7 @@ async function getSwaggerJson(src: string) {
     return await fetch(src).then((res) => res.json());
   }
 
-  let data = fs.readFileSync(src);
+  let data = fs.readFileSync(src, "utf-8");
   return JSON.parse(data.toString());
 }
 
