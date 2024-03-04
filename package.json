@@ -1,13 +1,12 @@
 {
   "name": "@teranes/openapi-fetch",
-  "version": "2.0.1",
+  "version": "3.0.0",
   "description": "TypeScript library that extends the Fetch API to provide type-safe support for OpenAPI endpoints.",
   "type": "module",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
+      "import": "./dist/index.js"
     },
     "./vite": {
       "import": {
@@ -25,7 +24,7 @@
       "esm",
       "cjs"
     ],
-    "dts": true,
+    "dts": false,
     "splitting": true,
     "clean": true
   },

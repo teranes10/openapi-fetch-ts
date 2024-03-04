@@ -1,6 +1,4 @@
-import type { Endpoints } from "./.generated/types.js";
-
-export function create(baseConfigs?: {
+export function create<Endpoints>(baseConfigs?: {
   baseUrl?: string;
   interceptor?: Interceptor;
 }) {
@@ -18,11 +16,11 @@ export function create(baseConfigs?: {
     method: Method,
     ...args: TRequest extends undefined ? [] : [options: TRequest]
   ): Promise<Result<TResponse>> {
-    const options = args[0] as RequestConfig | undefined;
+    const options = (args as any)[0] as RequestConfig | undefined;
 
     const configs: RequestConfig = {
       baseUrl,
-      url,
+      url: url as RequestUrl,
       method: method as RequestMethod,
       headers: { "Content-Type": "application/json" },
       body: options?.body as RequestBody,
@@ -99,33 +97,6 @@ function getResponse(response: Response, type: ResponseType) {
   }
 }
 
-type RequestUrl = `${"http" | "/"}${string}`;
-type RequestMethod = "get" | "post" | "put" | "patch" | "delete";
-type RequestParams = { [key: string]: any };
-type RequestBody = BodyInit;
-type RequestHeaders = { [key: string]: string };
-type ResponseType = "text" | "json" | "blob";
-
-type Result<T = any> = {
-  status: number;
-  data: T;
-};
-
-type RequestConfig = {
-  baseUrl: string;
-  url: RequestUrl;
-  method: RequestMethod;
-  headers: RequestHeaders;
-  params: RequestParams;
-  body: RequestBody;
-  responseType: ResponseType;
-};
-
-type Interceptor = (
-  config: RequestConfig,
-  next: () => Promise<any>
-) => Promise<Result>;
-
 function useStringTemplateWithReplacements(
   template: string,
   replacements: Record<string, string>
@@ -150,3 +121,30 @@ function useStringTemplateWithReplacements(
     notReplacedKeys: Array.from(notReplacedKeys),
   };
 }
+
+export type RequestUrl = `${"http" | "/"}${string}`;
+export type RequestMethod = "get" | "post" | "put" | "patch" | "delete";
+export type RequestParams = { [key: string]: any };
+export type RequestBody = BodyInit;
+export type RequestHeaders = { [key: string]: string };
+export type ResponseType = "text" | "json" | "blob";
+
+export type Result<T = any> = {
+  status: number;
+  data: T;
+};
+
+export type RequestConfig = {
+  baseUrl: string;
+  url: RequestUrl;
+  method: RequestMethod;
+  headers: RequestHeaders;
+  params: RequestParams;
+  body: RequestBody;
+  responseType: ResponseType;
+};
+
+export type Interceptor = (
+  config: RequestConfig,
+  next: () => Promise<any>
+) => Promise<Result>;
