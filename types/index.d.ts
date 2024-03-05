@@ -5,9 +5,9 @@ export type RequestBody = BodyInit;
 export type RequestHeaders = { [key: string]: string };
 export type ResponseType = "text" | "json" | "blob";
 
-export type Result<T = any> = {
-  status: number;
+export type Result<T = any> = Response & {
   data: T;
+  message: string;
 };
 
 export type RequestConfig = {

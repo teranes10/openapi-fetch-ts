@@ -31,15 +31,26 @@ export function create<Endpoints>(baseConfigs?: {
     async function next(): Promise<Result<TResponse>> {
       const url = getRequestUrl(configs.baseUrl, configs.url, configs.params);
 
-      const response = await fetch(url, {
-        headers: new Headers(configs.headers),
-        method: configs.method || "get",
-        body: JSON.stringify(configs.body || {}),
-      });
+      let response;
+      try {
+        response = await fetch(url, {
+          headers: new Headers(configs.headers),
+          method: configs.method || "get",
+          body: JSON.stringify(configs.body || {}),
+        });
+      } catch (error: any) {
+        throw { message: error.message };
+      }
 
-      const status = response.status;
-      const data = await getResponse(response, configs.responseType);
-      return { status, data };
+      const result = response as Result<TResponse>;
+      result.message = getMessage(response.status);
+
+      if (response.ok) {
+        result.data = await getResponse(response, configs.responseType);
+        return result;
+      }
+
+      throw result;
     }
 
     return interceptor ? interceptor(configs, next) : next();
@@ -97,6 +108,29 @@ function getResponse(response: Response, type: ResponseType) {
   }
 }
 
+function getMessage(status: number) {
+  switch (status) {
+    case 200:
+      return "Success";
+    case 400:
+      return "BadRequest";
+    case 401:
+      return "UnAuthorized";
+    case 403:
+      return "Forbidden";
+    case 404:
+      return "NotFound";
+    case 409:
+      return "Conflict";
+    case 422:
+      return "UnprocessableEntity";
+    case 500:
+      return "InternalServerError";
+    default:
+      return "Unknown";
+  }
+}
+
 function useStringTemplateWithReplacements(
   template: string,
   replacements: Record<string, string>
@@ -129,9 +163,9 @@ export type RequestBody = BodyInit;
 export type RequestHeaders = { [key: string]: string };
 export type ResponseType = "text" | "json" | "blob";
 
-export type Result<T = any> = {
-  status: number;
+export type Result<T = any> = Response & {
   data: T;
+  message: string;
 };
 
 export type RequestConfig = {
