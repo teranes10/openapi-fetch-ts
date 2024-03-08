@@ -36,7 +36,7 @@ export function create<Endpoints>(baseConfigs?: {
         response = await fetch(url, {
           headers: new Headers(configs.headers),
           method: configs.method || "get",
-          body: JSON.stringify(configs.body || {}),
+          ...(!!configs?.body && { body: JSON.stringify(configs.body) })
         });
       } catch (error: any) {
         throw { message: error.message };
@@ -71,8 +71,8 @@ function getRequestUrl(
   const urlTemplate = url.startsWith("http")
     ? url
     : url.startsWith("/")
-    ? baseUrl + url
-    : baseUrl + "/" + url;
+      ? baseUrl + url
+      : baseUrl + "/" + url;
 
   if (params) {
     const parameters = Object.assign({}, params);

@@ -11,7 +11,7 @@ export default function OpenApiFetch({ src }: Options) {
       for (const input of src) {
         const outDir = input.output.split("/").splice(-1).join("/");
         if (!fs.existsSync(outDir)) {
-          fs.mkdirSync(outDir, { recursive: true });
+          fs.mkdirSync(outDir);
         }
 
         const swaggerJson = await getSwaggerJson(input.src);
@@ -73,9 +73,8 @@ function getEndpointsTypeString(paths: {
 
       const responseType = responseSchema ? getType(responseSchema) : "any";
 
-      endpoints += `\t\t${method}: { response: ${responseType}, request: ${
-        hasOptions ? "{ " : "undefined,"
-      }`;
+      endpoints += `\t\t${method}: { response: ${responseType}, request: ${hasOptions ? "{ " : "undefined,"
+        }`;
 
       if (parameters) {
         endpoints += `params: { ${parameters
