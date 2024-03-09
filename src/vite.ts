@@ -9,11 +9,6 @@ export default function OpenApiFetch({ src }: Options) {
     name: "openapi-fetch-ts",
     async buildStart() {
       for (const input of src) {
-        const outDir = input.output.split("/").splice(-1).join("/");
-        if (!fs.existsSync(outDir)) {
-          fs.mkdirSync(outDir);
-        }
-
         const swaggerJson = await getSwaggerJson(input.src);
         loadSwagger(swaggerJson, input.output);
       }
