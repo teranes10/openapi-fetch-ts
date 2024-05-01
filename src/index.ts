@@ -36,7 +36,7 @@ export function create<Endpoints>(baseConfigs?: {
         response = await fetch(url, {
           headers: new Headers(configs.headers),
           method: configs.method || "get",
-          ...(!!configs?.body && { body: JSON.stringify(configs.body) })
+          ...(!!configs?.body && { body: configs.body instanceof FormData ? configs.body : JSON.stringify(configs.body) })
         });
       } catch (error: any) {
         throw { message: error.message };
