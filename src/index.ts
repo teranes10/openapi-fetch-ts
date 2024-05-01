@@ -22,7 +22,7 @@ export function create<Endpoints>(baseConfigs?: {
       baseUrl,
       url: url as RequestUrl,
       method: method as RequestMethod,
-      headers: { "Content-Type": "application/json", ...(options?.headers && options.headers) },
+      headers: options?.headers || {},
       body: options?.body as RequestBody,
       params: options?.params as RequestParams,
       responseType: "json",
@@ -34,7 +34,7 @@ export function create<Endpoints>(baseConfigs?: {
       let response;
       try {
         response = await fetch(url, {
-          headers: new Headers(configs.headers),
+          headers: new Headers({ ...(!(configs.body instanceof FormData) && { "Content-Type": "application/json" }), ...configs.headers }),
           method: configs.method || "get",
           ...(!!configs?.body && { body: configs.body instanceof FormData ? configs.body : JSON.stringify(configs.body) })
         });
