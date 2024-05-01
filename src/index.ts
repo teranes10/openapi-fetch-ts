@@ -22,7 +22,7 @@ export function create<Endpoints>(baseConfigs?: {
       baseUrl,
       url: url as RequestUrl,
       method: method as RequestMethod,
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", ...(options?.headers && options.headers) },
       body: options?.body as RequestBody,
       params: options?.params as RequestParams,
       responseType: "json",
