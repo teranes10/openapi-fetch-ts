@@ -4,8 +4,9 @@ export type RequestParams = { [key: string]: any };
 export type RequestBody = BodyInit;
 export type RequestHeaders = { [key: string]: string };
 export type ResponseType = "text" | "json" | "blob";
+export type ErrorResponseType = "text" | "json";
 
-export type Result<T = any> = Response & {
+export type FetchResult<T = any> = Response & {
   data: T;
   message: string;
 };
@@ -18,6 +19,7 @@ export type RequestConfig = {
   params: RequestParams;
   body: RequestBody;
   responseType: ResponseType;
+  errorResponseType: ErrorResponseType;
 };
 
 export type Interceptor = (
