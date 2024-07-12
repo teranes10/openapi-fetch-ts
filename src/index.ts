@@ -15,7 +15,7 @@ export function create<Endpoints>(baseConfigs?: {
     url: Url,
     method: Method,
     ...args: TRequest extends undefined ? [] : [options: TRequest]
-  ): Promise<Result<TResponse>> {
+  ): Promise<FetchResult<TResponse>> {
     const options = (args as any)[0] as RequestConfig | undefined;
 
     const configs: RequestConfig = {
@@ -26,9 +26,10 @@ export function create<Endpoints>(baseConfigs?: {
       body: options?.body as RequestBody,
       params: options?.params as RequestParams,
       responseType: "json",
+      errorResponseType: 'json'
     };
 
-    async function next(): Promise<Result<TResponse>> {
+    async function next(): Promise<FetchResult<TResponse>> {
       const url = getRequestUrl(configs.baseUrl, configs.url, configs.params);
 
       let response;
@@ -42,7 +43,7 @@ export function create<Endpoints>(baseConfigs?: {
         throw { message: error.message };
       }
 
-      const result = response as Result<TResponse>;
+      const result = response as FetchResult<TResponse>;
       result.message = getMessage(response.status);
 
       if (response.ok) {
@@ -50,6 +51,7 @@ export function create<Endpoints>(baseConfigs?: {
         return result;
       }
 
+      result.data = await getResponse(response, configs.errorResponseType);
       throw result;
     }
 
@@ -162,8 +164,9 @@ export type RequestParams = { [key: string]: any };
 export type RequestBody = BodyInit;
 export type RequestHeaders = { [key: string]: string };
 export type ResponseType = "text" | "json" | "blob";
+export type ErrorResponseType = "text" | "json";
 
-export type Result<T = any> = Response & {
+export type FetchResult<T = any> = Response & {
   data: T;
   message: string;
 };
@@ -176,9 +179,10 @@ export type RequestConfig = {
   params: RequestParams;
   body: RequestBody;
   responseType: ResponseType;
+  errorResponseType: ErrorResponseType
 };
 
 export type Interceptor = (
   config: RequestConfig,
   next: () => Promise<any>
-) => Promise<Result>;
+) => Promise<FetchResult>;
