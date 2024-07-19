@@ -14,7 +14,7 @@ export function create<Endpoints>(baseConfigs?: {
   >(
     url: Url,
     method: Method,
-    ...args: TRequest extends undefined ? [] : [options: TRequest]
+    ...args: TRequest extends undefined ? [options?: Partial<OtherConfigs> ] : [options: TRequest & Partial<OtherConfigs>]
   ): Promise<FetchResult<TResponse>> {
     const options = (args as any)[0] as RequestConfig | undefined;
 
@@ -25,8 +25,8 @@ export function create<Endpoints>(baseConfigs?: {
       headers: options?.headers || {},
       body: options?.body as RequestBody,
       params: options?.params as RequestParams,
-      responseType: "json",
-      errorResponseType: 'json'
+      responseType: options?.responseType || "json",
+      errorResponseType: options?.errorResponseType || 'json'
     };
 
     async function next(): Promise<FetchResult<TResponse>> {
@@ -181,6 +181,12 @@ export type RequestConfig = {
   responseType: ResponseType;
   errorResponseType: ErrorResponseType
 };
+
+export type OtherConfigs = {
+  headers: RequestHeaders;
+  responseType: ResponseType;
+  errorResponseType: ErrorResponseType
+}
 
 export type Interceptor = (
   config: RequestConfig,
