@@ -28,14 +28,14 @@
       "esm",
       "cjs"
     ],
-    "dts": false,
+    "dts": true,
     "splitting": true,
     "clean": true
   },
   "scripts": {
     "release": "npm run build && npm run patch && npm publish --access public",
     "patch": "git add . && git commit -m \"Automated build commit\" && npm version patch && git push",
-    "build": "tsup && cp -r types dist"
+    "build": "tsup"
   },
   "files": [
     "dist"

@@ -25,8 +25,8 @@ export function create<Endpoints>(baseConfigs?: {
       headers: options?.headers || {},
       body: options?.body as RequestBody,
       params: options?.params as RequestParams,
-      responseType: options?.responseType || "json",
-      errorResponseType: options?.errorResponseType || 'json'
+      responseType: options?.responseType,
+      errorResponseType: options?.errorResponseType
     };
 
     async function next(): Promise<FetchResult<TResponse>> {
@@ -99,8 +99,10 @@ function getRequestUrl(
   return urlTemplate;
 }
 
-function getResponse(response: Response, type: ResponseType) {
-  switch (type) {
+function getResponse(response: Response, type?: ResponseType) {
+  const _type: ResponseType = type || getResponseType(response) || 'json'
+
+  switch (_type) {
     case "text":
       return response.text();
     case "blob":
@@ -108,6 +110,27 @@ function getResponse(response: Response, type: ResponseType) {
     default:
       return response.json();
   }
+}
+
+function getResponseType(response: Response): ResponseType | undefined {
+  const type = response?.headers?.get('content-type')
+  if(!type) {
+    return undefined
+  }
+
+  if(type?.includes('application/json')) {
+    return 'json'
+  }
+
+  if(type?.includes('application/octet-stream')) {
+    return 'blob'
+  }
+
+  if (type.includes('text/plain') || type.includes('text/html')) {
+    return 'text';
+  }
+
+  return undefined;
 }
 
 function getMessage(status: number) {
@@ -178,8 +201,8 @@ export type RequestConfig = {
   headers: RequestHeaders;
   params: RequestParams;
   body: RequestBody;
-  responseType: ResponseType;
-  errorResponseType: ErrorResponseType
+  responseType?: ResponseType;
+  errorResponseType?: ErrorResponseType
 };
 
 export type OtherConfigs = {
