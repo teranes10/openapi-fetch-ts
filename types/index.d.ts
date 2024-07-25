@@ -22,6 +22,12 @@ export type RequestConfig = {
   errorResponseType: ErrorResponseType;
 };
 
+export type OtherConfigs = {
+  headers: RequestHeaders;
+  responseType: ResponseType;
+  errorResponseType: ErrorResponseType
+}
+
 export type Interceptor = (
   config: RequestConfig,
   next: () => Promise<any>
@@ -40,7 +46,7 @@ declare function create<Endpoints>(baseConfigs?: {
   >(
     url: Url,
     method: Method,
-    ...args: TRequest extends undefined ? [] : [options: TRequest]
+    ...args: TRequest extends undefined ? [options?: Partial<OtherConfigs>] : [options: TRequest & Partial<OtherConfigs>]
   ) => Promise<Result<TResponse>>;
 };
 

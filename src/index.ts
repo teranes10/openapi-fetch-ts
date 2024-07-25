@@ -8,13 +8,13 @@ export function create<Endpoints>(baseConfigs?: {
   async function request<
     Url extends keyof Endpoints,
     Method extends keyof Endpoints[Url],
-    Options extends Endpoints[Url][Method],
+    Options extends { request: undefined, response: undefined } & Endpoints[Url][Method],
     TRequest extends Options["request"],
     TResponse extends Options["response"]
   >(
     url: Url,
     method: Method,
-    ...args: TRequest extends undefined ? [options?: Partial<OtherConfigs> ] : [options: TRequest & Partial<OtherConfigs>]
+    ...args: TRequest extends undefined ? [options?: Partial<OtherConfigs>] : [options: TRequest & Partial<OtherConfigs>]
   ): Promise<FetchResult<TResponse>> {
     const options = (args as any)[0] as RequestConfig | undefined;
 
