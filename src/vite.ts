@@ -30,9 +30,9 @@ async function loadSwagger(swaggerJson: any, fileName: string) {
     swaggerJson.components.schemas as Schemas
   );
 
-  const endpointsContent =
-    "export interface Endpoints " +
-    getEndpointsTypeString(swaggerJson.paths as Item);
+  const endpointsContent = "export interface Endpoints {\n" +
+    "\t[url: string]: { [method: string]: { request: any, response: any } }\n" +
+    getEndpointsTypeString(swaggerJson.paths as Item) + "}\n";
 
   const content = `${endpointsContent}\n\n${typesContent}`;
 
@@ -50,8 +50,7 @@ function getEndpointsTypeString(paths: {
     responses: any;
   };
 }) {
-  let endpoints = "{\n";
-
+  let endpoints = "";
   for (const [endpointPath, endpoint] of Object.entries(paths)) {
     endpoints += `\t'${endpointPath}': {\n`;
 
@@ -92,8 +91,6 @@ function getEndpointsTypeString(paths: {
 
     endpoints += `\t}\n`;
   }
-
-  endpoints += `}\n`;
 
   return endpoints;
 }
