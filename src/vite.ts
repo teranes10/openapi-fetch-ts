@@ -1,5 +1,4 @@
 import fs from "fs";
-import path from "path";
 
 type Input = { src: string; output: string };
 type Options = { src: Input[] };
@@ -30,7 +29,7 @@ async function loadSwagger(swaggerJson: any, fileName: string) {
     swaggerJson.components.schemas as Schemas
   );
 
-  const endpointsContent = "export interface Endpoints {\n" +
+  const endpointsContent = "export type Endpoints = {\n" +
     "\t[url: string]: { [method: string]: { request: any, response: any } }\n" +
     getEndpointsTypeString(swaggerJson.paths as Item) + "}\n";
 
