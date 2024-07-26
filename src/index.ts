@@ -1,4 +1,4 @@
-export function create<Endpoints>(baseConfigs?: {
+export function create<Endpoints extends EndpointBase>(baseConfigs?: {
   baseUrl?: string;
   interceptor?: Interceptor;
 }) {
@@ -8,7 +8,7 @@ export function create<Endpoints>(baseConfigs?: {
   async function request<
     Url extends keyof Endpoints,
     Method extends keyof Endpoints[Url],
-    Options extends { request: undefined, response: undefined } & Endpoints[Url][Method],
+    Options extends Endpoints[Url][Method],
     TRequest extends Options["request"],
     TResponse extends Options["response"]
   >(
@@ -215,3 +215,12 @@ export type Interceptor = (
   config: RequestConfig,
   next: () => Promise<any>
 ) => Promise<FetchResult>;
+
+type EndpointBase = {
+  [url: string]: {
+    [method: string]: {
+      request: any;
+      response: any;
+    };
+  };
+};

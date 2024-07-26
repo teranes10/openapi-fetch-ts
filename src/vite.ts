@@ -31,7 +31,7 @@ async function loadSwagger(swaggerJson: any, fileName: string) {
   );
 
   const endpointsContent =
-    "export type Endpoints = " +
+    "export interface Endpoints " +
     getEndpointsTypeString(swaggerJson.paths as Item);
 
   const content = `${endpointsContent}\n\n${typesContent}`;
@@ -104,7 +104,7 @@ function schemasToTypesString(schemas: Schemas) {
   for (const [schemaName, schema] of Object.entries(schemas)) {
     const typeObject = schemaToTypeObject(schema);
     const objectString = objectToTypeString(typeObject);
-    typesContent += `export type ${schemaName} = ${objectString}\n`;
+    typesContent += `export interface ${schemaName} ${objectString}\n`;
   }
 
   return typesContent;
