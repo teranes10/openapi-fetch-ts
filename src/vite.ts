@@ -30,7 +30,6 @@ async function loadSwagger(swaggerJson: any, fileName: string) {
   );
 
   const endpointsContent = "export type Endpoints = {\n" +
-    "\t[url: string]: { [method: string]: { request: any, response: any } }\n" +
     getEndpointsTypeString(swaggerJson.paths as Item) + "}\n";
 
   const content = `${endpointsContent}\n\n${typesContent}`;
