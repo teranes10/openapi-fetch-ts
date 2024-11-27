@@ -100,29 +100,34 @@ function getRequestUrl(
 }
 
 function getResponse(response: Response, type?: ResponseType) {
-  const _type: ResponseType = type || getResponseType(response) || 'json'
+  try {
+    const _type: ResponseType = type || getResponseType(response) || 'json'
 
-  switch (_type) {
-    case "text":
-      return response.text();
-    case "blob":
-      return response.blob();
-    default:
-      return response.json();
+    switch (_type) {
+      case "text":
+        return response.text();
+      case "blob":
+        return response.blob();
+      default:
+        return response.json();
+    }
+  } catch (e) {
+    console.error(e)
+    return undefined
   }
 }
 
 function getResponseType(response: Response): ResponseType | undefined {
   const type = response?.headers?.get('content-type')
-  if(!type) {
+  if (!type) {
     return undefined
   }
 
-  if(type?.includes('application/json')) {
+  if (type?.includes('application/json')) {
     return 'json'
   }
 
-  if(type?.includes('application/octet-stream')) {
+  if (type?.includes('application/octet-stream')) {
     return 'blob'
   }
 
