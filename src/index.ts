@@ -99,20 +99,20 @@ function getRequestUrl(
   return urlTemplate;
 }
 
-function getResponse(response: Response, type?: ResponseType) {
+async function getResponse(response: Response, type?: ResponseType) {
   try {
     const _type: ResponseType = type || getResponseType(response) || 'json'
 
     switch (_type) {
       case "text":
-        return response.text();
+        return await response.text();
       case "blob":
-        return response.blob();
+        return await response.blob();
       default:
-        return response.json();
+        return await response.json();
     }
   } catch (e) {
-    console.error(e)
+    console.error("Error processing response:", e);
     return undefined
   }
 }
