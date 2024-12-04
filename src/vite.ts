@@ -1,7 +1,8 @@
 import fs from "fs";
 import { UserConfig } from "vite";
-type Input = { src: string; output: string; mappings?: Record<string, string> }
-type Options = { src: Input[] };
+
+type Input = { input: string; output: string; mappings?: Record<string, string> }
+type Options = { src: Input | Input[] };
 
 const _defaultMappings = {
   Guid: 'string',
@@ -23,9 +24,11 @@ export default function OpenApiFetch({ src }: Options) {
       }
     },
     async buildStart() {
-      for (const input of src) {
+      const inputs = Array.isArray(src) ? src : src ? [src] : []
+
+      for (const input of inputs) {
         _mappings = { ..._defaultMappings, ...(input.mappings || {}) }
-        const swaggerJson = await getSwaggerJson(input.src);
+        const swaggerJson = await getSwaggerJson(input.input);
         loadSwagger(swaggerJson, input.output);
       }
     },
