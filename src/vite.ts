@@ -1,13 +1,30 @@
 import fs from "fs";
-
-type Input = { src: string; output: string };
+import { UserConfig } from "vite";
+type Input = { src: string; output: string; mappings?: Record<string, string> }
 type Options = { src: Input[] };
+
+const _defaultMappings = {
+  Guid: 'string',
+  HashID: 'string',
+}
+
+let _mappings: Record<string, string> = {}
 
 export default function OpenApiFetch({ src }: Options) {
   return {
     name: "openapi-fetch-ts",
+    async config(config: UserConfig) {
+      config.define ??= { global: {} }
+      config.define.global ??= {}
+      config.define.global = {
+        openApiFetch: {
+          src
+        }
+      }
+    },
     async buildStart() {
       for (const input of src) {
+        _mappings = { ..._defaultMappings, ...(input.mappings || {}) }
         const swaggerJson = await getSwaggerJson(input.src);
         loadSwagger(swaggerJson, input.output);
       }
@@ -97,6 +114,12 @@ function schemasToTypesString(schemas: Schemas) {
   let typesContent = "";
 
   for (const [schemaName, schema] of Object.entries(schemas)) {
+    const mappedValue = _mappings[schemaName]
+    if (mappedValue) {
+      typesContent += `export type ${schemaName} = ${mappedValue}\n`;
+      continue;
+    }
+
     const typeObject = schemaToTypeObject(schema);
     const objectString = objectToTypeString(typeObject);
     typesContent += `export interface ${schemaName} ${objectString}\n`;

@@ -60,5 +60,7 @@
     "tsup": "^8.0.2",
     "typescript": "^5.3.3"
   },
-  "dependencies": {}
+  "dependencies": {
+    "vite": "^6.0.2"
+  }
 }
