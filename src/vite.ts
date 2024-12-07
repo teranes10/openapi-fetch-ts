@@ -1,4 +1,5 @@
-import { writeFile, readFile } from "fs/promises";
+import { writeFile, readFile, mkdir, access } from "fs/promises";
+import { dirname, join } from "path";
 import { UserConfig } from "vite";
 
 type Input = { input: string; output: string; mappings?: Record<string, string> }
@@ -10,6 +11,7 @@ const _defaultMappings = {
 }
 
 let _mappings: Record<string, string> = {}
+let __dirname = ''
 
 export default function OpenApiFetch({ src }: OpenApiFetchOptions) {
   return {
@@ -23,6 +25,9 @@ export default function OpenApiFetch({ src }: OpenApiFetchOptions) {
           src
         }
       }
+    },
+    configResolved(c: UserConfig) {
+      __dirname = c.root || ''
     },
     async buildStart() {
       const inputs = Array.isArray(src) ? src : src ? [src] : []
@@ -44,7 +49,7 @@ async function getSwaggerJson(src: string) {
       return await fetch(src).then((res) => res.json());
     }
 
-    let data = await readFile(src, "utf-8");
+    let data = await readFile(join(__dirname, src), "utf-8");
     return JSON.parse(data.toString());
   } catch (e) {
 
@@ -61,7 +66,9 @@ async function loadSwagger(swaggerJson: any, fileName: string) {
   const content = `${endpointsContent}\n\n${typesContent}`;
 
   try {
-    await writeFile(fileName, content);
+    const filePath = join(__dirname, fileName)
+    await mkdirs(dirname(filePath))
+    await writeFile(filePath, content);
   } catch (err) {
     console.error("Error writing file: ", err);
   }
@@ -221,3 +228,20 @@ type SchemaProp = {
   $ref?: string;
   items?: SchemaProp;
 };
+
+export async function mkdirs(dir: string) {
+  if (!(await exists(dir))) {
+    await mkdir(dir, { recursive: true })
+  }
+}
+
+export async function exists(path: string) {
+  try {
+    await access(path)
+    return true
+  }
+  // eslint-disable-next-line unused-imports/no-unused-vars
+  catch (e) {
+    return false
+  }
+}
