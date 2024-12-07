@@ -52,13 +52,12 @@ async function getSwaggerJson(src: string) {
 }
 
 async function loadSwagger(swaggerJson: any, fileName: string) {
-  const typesContent = schemasToTypesString(
-    swaggerJson.components.schemas as Schemas
-  );
+  const schemas = swaggerJson?.components?.schemas as Schemas
+  const typesContent = schemas ? schemasToTypesString(schemas) : '';
 
-  const endpointsContent = "export type Endpoints = {\n" +
-    getEndpointsTypeString(swaggerJson.paths as Item) + "}\n";
-
+  const paths = swaggerJson.paths as Item
+  const endpointTypesContent = paths ? getEndpointsTypeString(paths) : ''
+  const endpointsContent = "export type Endpoints = {\n" + endpointTypesContent + "}\n";
   const content = `${endpointsContent}\n\n${typesContent}`;
 
   try {
