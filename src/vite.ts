@@ -2,7 +2,7 @@ import fs from "fs";
 import { UserConfig } from "vite";
 
 type Input = { input: string; output: string; mappings?: Record<string, string> }
-type Options = { src: Input | Input[] };
+export type OpenApiFetchOptions = { src: Input | Input[] };
 
 const _defaultMappings = {
   Guid: 'string',
@@ -11,7 +11,7 @@ const _defaultMappings = {
 
 let _mappings: Record<string, string> = {}
 
-export default function OpenApiFetch({ src }: Options) {
+export default function OpenApiFetch({ src }: OpenApiFetchOptions) {
   return {
     name: "openapi-fetch-ts",
     async config(config: UserConfig) {
@@ -19,6 +19,7 @@ export default function OpenApiFetch({ src }: Options) {
       config.define.global ??= {}
       config.define.global = {
         openApiFetch: {
+          defaultMappings: _defaultMappings,
           src
         }
       }
