@@ -63,7 +63,10 @@ async function loadSwagger(swaggerJson: any, fileName: string) {
   const paths = swaggerJson.paths as Item
   const endpointTypesContent = paths ? getEndpointsTypeString(paths) : ''
   const endpointsContent = "export type Endpoints = {\n" + endpointTypesContent + "}\n";
-  const content = `${endpointsContent}\n\n${typesContent}`;
+  const content = `/* eslint-disable ts/consistent-type-definitions */
+  ${endpointsContent}
+  ${typesContent}
+  `;
 
   try {
     const filePath = join(__dirname, fileName)
