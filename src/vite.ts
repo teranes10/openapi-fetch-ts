@@ -1,4 +1,4 @@
-import fs from "fs";
+import { writeFile, readFile } from "fs/promises";
 import { UserConfig } from "vite";
 
 type Input = { input: string; output: string; mappings?: Record<string, string> }
@@ -30,19 +30,25 @@ export default function OpenApiFetch({ src }: OpenApiFetchOptions) {
       for (const input of inputs) {
         _mappings = { ..._defaultMappings, ...(input.mappings || {}) }
         const swaggerJson = await getSwaggerJson(input.input);
-        loadSwagger(swaggerJson, input.output);
+        if (swaggerJson) {
+          loadSwagger(swaggerJson, input.output);
+        }
       }
     },
   };
 }
 
 async function getSwaggerJson(src: string) {
-  if (src.includes("http")) {
-    return await fetch(src).then((res) => res.json());
-  }
+  try {
+    if (src.includes("http")) {
+      return await fetch(src).then((res) => res.json());
+    }
 
-  let data = fs.readFileSync(src, "utf-8");
-  return JSON.parse(data.toString());
+    let data = await readFile(src, "utf-8");
+    return JSON.parse(data.toString());
+  } catch (e) {
+
+  }
 }
 
 async function loadSwagger(swaggerJson: any, fileName: string) {
@@ -56,7 +62,7 @@ async function loadSwagger(swaggerJson: any, fileName: string) {
   const content = `${endpointsContent}\n\n${typesContent}`;
 
   try {
-    fs.writeFileSync(fileName, content);
+    await writeFile(fileName, content);
   } catch (err) {
     console.error("Error writing file: ", err);
   }
